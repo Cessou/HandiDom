@@ -46,9 +46,9 @@
 				for($i=0; $i<8; $i++){
 				$code .=  mt_rand(0,9);}
 				var_dump($_POST['passconf']);
-				$req = $bdd->prepare('UPDATE ihm SET pass = :pass WHERE email = :email');
+				$req = $bdd->prepare('UPDATE user SET pass = :pass WHERE email = :email');
 				$req->execute(array('pass' => $pass, 'email' => $email));
-				$req = $bdd->prepare('UPDATE ihm SET code = :code WHERE email = :email');
+				$req = $bdd->prepare('UPDATE user SET code = :code WHERE email = :email');
 				$req->execute(array('code' => $code, 'email' => $email)); ?>
 				<script type="text/javascript"> alert("Mot de passe modifié") </script>
 				<?php

@@ -6,11 +6,11 @@
       </div>
 	<div class="row">
 <?php 
-    require "src/month.php";
-	  require "src/events.php";
+  require "src/month.php";
+	require "src/events.php";
 
     $events = new Events();
-	  $month = new Month($_GET['month'] ?? null,  $_GET['year'] ?? null);
+	$month = new Month($_GET['month'] ?? null,  $_GET['year'] ?? null);
     $start = $month->getStartingDay();
     $start = $start->format('N') === '1' ? $start : $month->getStartingDay()->modify('last monday');
     $weeks = $month->getWeeks();
@@ -19,11 +19,6 @@
     $events = $events->getEventsBetweenByDay($start, $end);
 
     include("bdd.php"); //BDD
-
-    $req = $bdd->prepare('SELECT id FROM agenda');  
-    $req->execute();	
-	  $donnees = $req->fetch(); 
-    //$id = $donnees['id'];      
 ?>
 <div class="d-flex col-md-12">
     <div class="col-md-10">
@@ -31,11 +26,11 @@
         <hr>
     </div>
 	 <div class="col-md-1">
-		<a href="/addevent.php" class="btn btn-secondary"><img  src="/img/svg/plus.svg" class="invert" ></a>
+		<a href="/addevent.php?user=<?php echo $_GET["user"] ?>" class="btn btn-secondary"><img  src="/img/svg/plus.svg" class="invert" ></a>
 	</div>
     <div class="col-md-2 ">
-        <a href="/agenda.php?month=<?php echo sprintf('%02d', $month->previousMonth()->month); ?>&year=<?php echo $month->previousMonth()->year; ?>" class="btn btn-dark"><img src="/img/svg/chevron-left.svg" class="invert"></a>
-        <a href="/agenda.php?month=<?php echo sprintf('%02d', $month->nextMonth()->month); ?>&year=<?php echo $month->nextMonth()->year; ?>" class="btn btn-dark"><img  src="/img/svg/chevron-right.svg" class="invert" ></a>
+        <a href="/agenda.php?user=<?php echo $_GET["user"] ?>&month=<?php echo sprintf('%02d', $month->previousMonth()->month); ?>&year=<?php echo $month->previousMonth()->year; ?>" class="btn btn-dark"><img src="/img/svg/chevron-left.svg" class="invert"></a>
+        <a href="/agenda.php?user=<?php echo $_GET["user"] ?>&month=<?php echo sprintf('%02d', $month->nextMonth()->month); ?>&year=<?php echo $month->nextMonth()->year; ?>" class="btn btn-dark"><img  src="/img/svg/chevron-right.svg" class="invert" ></a>
 </div>
 </div>
 
@@ -66,9 +61,9 @@
       $dates = date("Y-m") . "-" . $date->format('d'); 
     }
     ?> 
-        <td style="cursor:pointer" onclick="location.href='agendaday.php?date=<?php echo $dates; ?>'" class="<?php echo $isToday ? "is-today" : ''; ?><?php echo $month->withinMonth($date) ? '' : "calendar__othermonth"; ?> hover">
+        <td style="cursor:pointer" onclick="location.href='agendaday.php?user=<?php echo $_GET["user"] ?>&date=<?php echo $dates; ?>'" class="<?php echo $isToday ? "is-today" : ''; ?><?php echo $month->withinMonth($date) ? '' : "calendar__othermonth"; ?> hover">
             <div class="calendar__day">
-              <a class="nounderline" href="addevent.php?date=<?php echo $dates; ?>" >
+              <a class="nounderline"  id="bw" href="addevent.php?user=<?php echo $_GET["user"] ?>$date=<?php echo $dates; ?>" >
                 <?php echo $date->format('d'); ?>
               </a>
             </div>
@@ -77,7 +72,7 @@
 			<div class="calendar__event">
 			<u>
 			<?php  echo (new DateTime($event['start']))->format('H:i'); ?> - <?php echo (new DateTime($event['end']))->format('H:i');?></u> :
-			<a href="editevent.php?id=<?php echo $event['id']; ?>">
+			<a href="editevent.php?user=<?php echo $_GET["user"] ?>&id=<?php echo $event['id']; ?>">
 			<?php echo $event['name'] ; ?></a>
 			</div>
 			<?php endforeach; ?>
@@ -96,7 +91,7 @@
       $req->execute(array('del' => $del));
       ?>      
       <script type="text/javascript"> alert("Evénement supprimé") </script>
-	  <meta http-equiv="refresh" content="0.1; URL=agenda.php">
+	  <meta http-equiv="refresh" content="0.1; URL=agenda.php?user=<?php echo $_GET["user"] ?>">
         <?php
     }
 ?> 	

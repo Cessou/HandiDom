@@ -1,33 +1,32 @@
  <?php include("navs.php"); ?>  
 <html>
 <body>
-   <?php
-   
-     include("bdd.php"); //BDD  
+<?php 
+    include("bdd.php"); //BDD  
 
-     if (isset($_GET['contact']))
+     if (isset($_GET['id']))
     {
-      $prenom = $_GET['contact'];
-    
-
+    $id = $_GET['id'];
+    $id_user = $_GET['user'];
     //recuperation de la bdd
-    $req = $bdd->prepare('SELECT * FROM phone WHERE `phone`.`prenom` = :prenom');
-    $req->execute(array('prenom' => $prenom));
+    $req = $bdd->prepare('SELECT * FROM contacts WHERE `contacts`.`id` = :id');
+    $req->execute(array('id' => $id));
     $donnees = $req->fetch(); 
     $idreq = $donnees['id'];
     $nomreq = $donnees['nom'];
     $prenomreq = $donnees['prenom'];
     $frequencereq = $donnees['frequence'];
     $numeroreq = $donnees['numero'];
-	$idphoto = substr ($numeroreq , -3);
+    $MonMembreExiste = $req->rowCount();
     }
-    ?>
-    <?php if(empty($_GET)): ?>
-    <?php else: ?>      
+  if(empty($_GET['id'])): 
+  $id_user = $_GET['user'];
+  header('Location: phone.php?user='.$id_user);
+  else: ?>      
   <main role="main" class="container">         
     <div class="col-md-8 order-md-1">
           <h4 class="mb-3">Contact</h4>
-          <form class="needs-validation" action="editcontact.php" method="post" enctype="multipart/form-data">
+          <form class="needs-validation" action="editcontact.php?user=<?php echo $_GET["user"] ?>" method="post" enctype="multipart/form-data">
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="firstName">Prénom</label>
@@ -48,10 +47,7 @@
               <div class="col-md-6">
               <label for="country">Upload</label>
               <div class="input-group mb-3">
-                <div class="custom-file">
-                  <input type="file" class="custom-file-input" name="monfichier" >
-                  <label class="custom-file-label" >Choisir un fichier</label>
-                </div>
+                  <input type="file" name="monfichier">
               </div>
               </div>
               <div class="col-md-4 mb-3">
@@ -72,14 +68,14 @@
               </div>
               <div class="col-md-6">
                 <label for="cc-number">Photo</label>
-                <div class="profile-media_item" style="background: url(img/profil/<?php echo $prenom.$idphoto;?>.jpg) center / cover"></div>
+                <div class="profile-media_item" style="background: url(img/profil/<?php echo $idreq;?>.jpg) center / cover"></div>
               </div>
             </div> 
             <input type="hidden" name="id" value="<?php echo $idreq;?>" />
             <hr class="mb-4">
               <div class="row justify-content-between">
             <div class="col-md-4 offset-md-8">
-              <a href="phone.php"><button type="button" class="btn btn-secondary btn-lg">Retour </button></a>
+              <a href="phone.php?user=<?php echo $_GET["user"] ?>"><button type="button" class="btn btn-secondary btn-lg">Retour </button></a>
               <button type="submit" class="btn btn-dark btn-lg">Valider </button>        
             </div> 
             </div> 
@@ -97,13 +93,13 @@
      $numero = substr($numero,1);  // modification numero pour basse de donnée
      $frequence = $_POST['frequence'];
 
-      echo $frequence;
+    include("inputfile.php"); //input file
 
-      $req = $bdd->prepare('UPDATE phone SET prenom = :prenom, nom = :nom, numero = :numero, frequence = :frequence WHERE id = :id'); 
+      $req = $bdd->prepare('UPDATE contacts SET prenom = :prenom, nom = :nom, numero = :numero, frequence = :frequence WHERE id = :id'); 
       $req->execute(array(
 
     'prenom' => $prenom,
-
+ 
     'nom' => $nom,
 
     'numero' => "+33".$numero,
@@ -116,7 +112,7 @@
         ?>
        <script type="text/javascript"> alert("Contact mit à jour") </script>
         <?php
-      header('Refresh:0.5; url=phone.php');
+      header('Refresh:0.5; url=phone.php?user='.$id_user);
 }    
 
 ?>

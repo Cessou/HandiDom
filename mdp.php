@@ -7,7 +7,7 @@
 
     include("bdd.php"); //BDD
 
-    $req = $bdd->prepare('SELECT email FROM ihm');
+    $req = $bdd->prepare('SELECT email FROM admin');
     $req->execute();
     $resultat = $req->fetch(); 
     $email = $resultat['email'] ;
@@ -26,6 +26,7 @@
         </form>
         </div>
     <?php 
+
     elseif ($_POST['email']==$email): ?>    
          <div class="row">
           <form method="post" class="form-signin">
@@ -82,7 +83,7 @@
         <div class="row">
         <form method="post" class="form-signin">
           <div class="square">
-            <button type="button" class="btn btn-lg btn-danger btn-block"> 
+            <button type="button" disabled="disabled" class="btn btn-lg btn-danger btn-block"> 
             Email incorrect 
             </button>
             </br>

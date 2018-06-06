@@ -1,11 +1,13 @@
 <?php include("navs.php"); ?>  
 <html>
 <body>
-<?php if(empty($_POST)): ?>
+<?php if(empty($_POST)): 
+$id_user = $_GET['user'];
+?>
 <main role="main" class="container">
     <div class="col-md-8 order-md-1">
           <h4 class="mb-3">Contact</h4>
-          <form class="needs-validation" action="addcontact.php" method="post" enctype="multipart/form-data">
+          <form class="needs-validation" action="addcontact.php?user=<?php echo $_GET["user"] ?>" method="post" enctype="multipart/form-data">
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="firstName">Prénom</label>
@@ -23,13 +25,10 @@
               </div>
             </div>
             <div class="row">
-              <div class="col-md-6">
+             <div class="col-md-6">
               <label for="country">Upload</label>
               <div class="input-group mb-3">
-                <div class="custom-file">
-                  <input type="file" class="custom-file-input" name="monfichier" required>
-                  <label class="custom-file-label" >Choisir un fichier</label>
-                </div>
+                  <input type="file" name="monfichier">
               </div>
               </div>
               <div class="col-md-4 mb-3">
@@ -51,61 +50,27 @@
             <hr class="mb-4">
               <div class="row justify-content-between">
             <div class="col-md-4 offset-md-8">
-              <a href="phone.php"><button type="button" class="btn btn-secondary btn-lg">Retour </button></a>
+              <a href="phone.php?user=<?php echo $_GET['user']; ?>"><button type="button" class="btn btn-secondary btn-lg">Retour </button></a>
               <button type="submit" class="btn btn-dark btn-lg">Valider </button>        
             </div> 
             </div> 
           </form>
-  <?php else: ?>              
-<?php
-    
+  <?php else: 
     include("bdd.php"); //BDD
-
     if (isset($_POST['prenom'])) 
     { 
-
+     $id_user = $_GET['user'];
+     $id_user = $_GET['id'];
      $prenom = $_POST['prenom']; 
      $nom = $_POST['nom'];
      $num = $_POST['numero'];  
-	 $idphoto = substr ($num, -3);
      $numero=str_replace(' ','',$num);
      $numero = substr($numero,1);  // modification numero pour basse de donnée
      $frequence = $_POST['frequence'];
 
-    $allowed_filetypes = array('.JPG', '.jpg', '.jpeg', '.JPEG', '.gif','.bmp','.png','.PNG'); // Fichiers passant la validation.
-    $max_filesize = 524200000; // taille du paquet max
-    $upload_path = './img/profil/'; // Directory.
-    $prenom = $_POST['prenom']; 
-    $filename = $_FILES['monfichier']['name']; // Nom du fichier
-    $ext = substr($filename, strpos($filename,'.'), strlen($filename)-1); // Recuperation de l'extension
+    include("inputfile.php"); //input file
 
-// On verifie si le type de fichier va bien
-if(!in_array($ext,$allowed_filetypes))
-   {
-    ?>      
-        <script type="text/javascript"> alert("Pas de photo ajouté") </script>
-    <?php
-    }
-  
-// On regarde la taille du fichier
-if(filesize($_FILES['monfichier']['tmp_name']) > $max_filesize)
-   die('?>      
-        <script type="text/javascript"> alert("Image trop volumineuse") </script>
-        <?php');
-  
-// On verifie si on peut ecrire dans le repertoire de destination
-if(!is_writable($upload_path))
-   die('?>      
-        <script type="text/javascript"> alert("Formulaire incorrect") </script>
-        <?php');
-
-// On upload
-if(move_uploaded_file($_FILES['monfichier']['tmp_name'],$upload_path . $prenom. $idphoto . '.jpg'))
-    {
-      echo '<p> Too bad, Ca plante... </p>'; //  Erreur pdt le transfert :(.
-      } 
-
-      $req = $bdd->prepare('INSERT INTO phone(prenom, nom, numero, frequence) VALUES(:prenom, :nom, :numero, :frequence)');
+      $req = $bdd->prepare('INSERT INTO contacts(prenom, nom, numero, frequence, id_user) VALUES(:prenom, :nom, :numero, :frequence, :id_user)');
 
       $req->execute(array(
 
@@ -117,11 +82,13 @@ if(move_uploaded_file($_FILES['monfichier']['tmp_name'],$upload_path . $prenom. 
 
     'frequence' => $frequence,
 
+    'id_user' => $id_user,
+
     ));
         ?>
         <script type="text/javascript"> alert("Contact ajouté") </script>
         <?php
-        header('Refresh:0.5; url=phone.php');
+        header('Refresh:0.5; url=phone.php?user='.$id_user);
 
       }
     else 

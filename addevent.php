@@ -99,7 +99,7 @@
 	  $start = $date . " ". $starttime ;
 	  $end = $date . " ". $endtime ;
 
-      $req = $bdd->prepare('INSERT INTO agenda SET name = :name, description = :description, start = :start, end = :end, picto = :picto');
+      $req = $bdd->prepare('INSERT INTO events SET name = :name, description = :description, start = :start, end = :end, picto = :picto');
       $req->execute(array(
 
     'name' => $titre,

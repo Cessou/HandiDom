@@ -1,24 +1,19 @@
-    <div class="container">
-      <div class="row">
-        <?php include("navs.php"); ?>  
-      </div>
+<?php include("navs.php"); ?>  
+<html>
 <body>
-	<div class="row">
-
   <?php
      require "src/month.php";
-	require "src/events.php";
+	   require "src/events.php";
     $events = new Events();
 	
     include("bdd.php"); //BDD   
 
      if (isset($_GET['id']))
     {
-      $id = $_GET['id'];
-    
-
+    $id = $_GET['id'];   
+    $id_user = $_GET['user'];
     //recuperation de la bdd
-    $req = $bdd->prepare('SELECT * FROM agenda WHERE `agenda`.`id` = :id');
+    $req = $bdd->prepare('SELECT * FROM events WHERE `events`.`id` = :id');
     $req->execute(array('id' => $id));
     $donnees = $req->fetch(); 
     $titre = $donnees['name'];
@@ -31,13 +26,14 @@
 	$datestart = explode(" ", $end);
 	$endtime = $datestart[1]; 
     }
-    ?>
-    <?php if(empty($_GET)): ?>
-    <?php else: ?>      
+  if(empty($_GET['id'])): 
+  $id_user = $_GET['user'];
+	header('Location: agenda.php?user='.$id_user);
+  else: ?>      
   <main role="main" class="container">         
     <div class="col-md-8 order-md-1">
           <h4 class="offset-md-5 mb-2">&Eacute;vénement</h4><hr class="mb-2"><br>
-          <form class="needs-validation" action="editevent.php" method="post" enctype="multipart/form-data">
+          <form class="needs-validation" action="editevent.php?user=<?php echo $_GET["user"] ?>" method="post" enctype="multipart/form-data">
             <div class="row">
 				<div class="col-md-6 mb-3">
 					<label for="firstName">Titre de l'événement</label>
@@ -97,10 +93,10 @@
             <hr class="mb-4">
             <div class="row justify-content-between">
             <div class="col-md-2">
-				<a href='agenda.php?del=<?php echo $id; ?>'><button type="button" class="btn btn-secondary btn-lg">Supprimer</button></a>
+				<a href='agenda.php?user=<?php echo $_GET["user"] ?>&del=<?php echo $id; ?>'><button type="button" class="btn btn-secondary btn-lg">Supprimer</button></a>
 			</div>
 			<div class="col-md-4 offset-md-6">
-				<a href="agenda.php"><button type="button" class="btn btn-secondary btn-lg">Retour </button></a>
+				<a href="agenda.php?user=<?php echo $_GET["user"] ?>"><button type="button" class="btn btn-secondary btn-lg">Retour </button></a>
 				<button type="submit" class="btn btn-dark btn-lg">Valider </button>        
             </div> 
             </div> 
@@ -112,7 +108,7 @@
     
     $id = $_POST['id'];
     $titre = $_POST['titre'];
-	  $titre = ucfirst($titre);	 
+	  $titre = ucfirst($titre);
     $detail = $_POST['detail'];
 	  $detail = ucfirst($detail);
 	  $date = $_POST['date'] ; 
@@ -136,7 +132,7 @@
         ?>
        <script type="text/javascript"> alert("Evenement mit à jour") </script>
         <?php
-      header('Refresh:0.5; url=agenda.php');
+      header('Refresh:0.5; url=agenda.php?user='.$id_user);
 }    
 
 ?>

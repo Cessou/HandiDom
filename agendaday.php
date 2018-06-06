@@ -20,10 +20,24 @@
       $dates=array(date("Y"),date("m"),date("d")); 
       $date= date("Y-m-d");   
     }
-    $mois=intval($dates[1]);
+    $mois=intval($dates[1]-1);
     $nextday =  $dates[0] ."-". $dates[1] ."-". ($dates[2]+1);
     $previousday =  $dates[0] ."-". $dates[1] ."-". ($dates[2]-1);
-    $maxday = date("t",$mois);
+    $maxday = cal_days_in_month(CAL_FRENCH, intval($dates[1]), intval($dates[0]));
+    $prevmaxday = $maxday-1;
+    if (($dates[2]) == $maxday)
+    {
+        $nextday =  $dates[0] ."-". sprintf('%02d', ($dates[1]+1)) ."-". (01);    
+    }
+    if (($dates[2]) == 01)
+    {
+        $previousday =  $dates[0] ."-". ($dates[1]-1) ."-". ($dates[2]-1);  
+        $previousday =  $dates[0] ."-". sprintf('%02d', ($dates[1]-1)) ."-". ($maxday-1);
+    }
+    if (($dates[1] + $dates[2]) == $maxday)
+    {
+        $nextday =  $dates[0] ."-". sprintf('%02d', ($dates[1]+1)) ."-". (01);    
+    }
 ?>
 
 <div class="d-flex col-md-12">
